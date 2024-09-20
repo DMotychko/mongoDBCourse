@@ -1,0 +1,54 @@
+//Знайти всіх дітей в яких сердня оцінка 4.2
+db.students.find({avgScore: 4.2})
+
+//Знайди всіх дітей з 1 класу
+db.students.find({class: 1})
+
+//Знайти всіх дітей які вивчають фізику
+db.students.find({lessons: 'physics'})
+
+//Знайти всіх дітей, батьки яких працюють в науці ( scientist )
+db.students.find({'parents.profession': 'scientist'})
+
+//Знайти дітей, в яких середня оцінка більша за 4
+db.students.find({avgScore: {$gt: 4}})
+
+//Знайти найкращого учня
+db.students.aggregate([
+    {
+        $sort: {
+            avgScore: -1
+        }
+    },
+    {$limit: 1}
+])
+
+//Знайти найгіршого учня
+db.students.aggregate([
+    {
+        $sort: {
+            avgScore: 1
+        }
+    },
+    {$limit: 1}
+])
+
+//Знайти топ 3 учнів
+db.students.aggregate([
+    {
+        $sort: {
+            avgScore: -1
+        }
+    },
+    {$limit: 3}
+])
+
+//Знайти середній бал по школі
+db.students.aggregate([
+    {
+        $group: {
+            _id: '',
+            averageScore: { $avg: "$avgScore" }
+        }
+    }
+])
