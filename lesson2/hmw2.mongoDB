@@ -52,3 +52,85 @@ db.students.aggregate([
         }
     }
 ])
+
+//найти середній бал дітей які вивчають математику або фізику
+db.students.aggregate([
+    {
+        $match: {
+            $and: [
+                {lessons: 'physics'},
+                {lessons: 'mathematics'}
+            ]
+        }
+    },
+    {
+        $group: {
+            _id: '',
+            avgScoreMP: {$avg: '$avgScore'}
+        }
+    }
+])
+
+//Знайти середній бал по 2 класі
+db.students.aggregate([
+    {
+        $match: {
+            class: 2
+        }
+    },
+    {
+        $group: {
+            _id: '',
+            avgScoreClass: {$avg: '$avgScore'}
+        }
+    }
+])
+
+//Знайти дітей з не повною сім'єю
+db.students.find({parents: {$size: 1}})
+
+//Знайти батьків які не працюють
+db.students.find({ "parents.profession": { $exists: 0 } })
+
+//Вигнати дітей, які мають середній бал менше ніж 2.5
+db.students.deleteMany({
+    avgScore: {$lt: 2.5}
+})
+
+//Дітям, батьки яких працюють в освіті ( teacher ) поставити 5
+db.students.updateMany(
+    {
+        'parents.profession': 'teacher'
+    },
+    {
+        $set: {
+            avgScore: 5
+        }
+    }
+)
+
+//Знайти дітей які вчаться в початковій школі (до 5 класу) і вивчають фізику ( physics )
+db.students.find({
+    $and: [
+        {class: {$lt: 5}},
+        {lessons: 'physics'}
+    ]
+})
+
+//Знайти найуспішніший клас
+db.students.aggregate([
+    {
+        $group: {
+            _id: '$class',
+            avgScoreClass: {$avg: '$avgScore'}
+        }
+    },
+    {
+        $sort: {
+            avgScoreClass: -1
+        }
+    },
+    {
+        $limit: 1
+    }
+])
